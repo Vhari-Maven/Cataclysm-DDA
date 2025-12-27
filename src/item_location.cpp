@@ -490,6 +490,13 @@ class item_location::impl::item_on_vehicle : public item_location::impl
         item_on_vehicle( const vehicle_cursor &cur, int idx ) : impl( idx ), cur( cur ) {}
 
         void serialize( JsonOut &js ) const override {
+            // Check if item still exists (vehicle may have been unloaded from reality bubble)
+            if( target() == nullptr ) {
+                js.start_object();
+                js.member( "type", "null" );
+                js.end_object();
+                return;
+            }
             js.start_object();
             js.member( "type", "vehicle" );
             js.member( "position", pos_abs() );
